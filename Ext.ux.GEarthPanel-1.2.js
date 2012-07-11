@@ -17,7 +17,8 @@ Ext.namespace('Ext.ux');
  * @class GEarthPanel
  * @extends Ext.Panel
  */
-Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
+Ext.define('Ext.ux.GEarthPanel', {
+    extend: 'Ext.panel.Panel',
 
     initComponent: function(){
         // Default values
@@ -47,7 +48,7 @@ Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
     // Create Google Earth instance when panel is rendered
     afterRender: function(){
         Ext.ux.GEarthPanel.superclass.afterRender.call(this);
-        google.earth.createInstance(this.body.dom, this.onEarthReady.createDelegate(this), {});
+        google.earth.createInstance(this.body.dom, Ext.bind(this.onEarthReady, this), {});
     },
 
     // Called by above function
@@ -63,11 +64,11 @@ Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
         	xtype: 'treepanel',
             border: false,
             bodyStyle: 'padding-bottom: 15px',
-        	root: new Ext.tree.TreeNode({
+        	root: {
         		text: 'KML Documents',
         		iconCls: 'folder',
         		expanded: true
-        	}),
+        	},
             rootVisible: false,
             listeners: {checkchange: {fn: function(node, checked){
             	node.attributes.kml.setVisibility(checked);
@@ -115,9 +116,9 @@ Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
 	            checked: this.earthLayers[layer],
 	            name: layer,
 	            earth: this.earth,
-    	        handler: function(layer, visibility) {
+    	        handler: Ext.bind(function(layer, visibility) {
                     this.earth.getLayerRoot().enableLayerById(this.earth[layer.name], visibility);
-    	        }.createDelegate(this)
+    	        }, this)
     		});
         }
 
@@ -161,9 +162,9 @@ Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
                 boxLabel: optionLabels[option],
 	            checked: this.earthOptions[option],
 	            name: option,
-    	        handler: function(option, visibility) {
+    	        handler: Ext.bind(function(option, visibility) {
                     this.earth.getOptions()[option.name](visibility);
-    	        }.createDelegate(this)
+    	        }, this)
     		});
         }
 
@@ -208,13 +209,13 @@ Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
     // Based on http://earth-api-samples.googlecode.com/svn/trunk/examples/geocoder.html
     findLocation: function(geocodeLocation){
         var geocoder = new google.maps.ClientGeocoder();
-        geocoder.getLatLng(geocodeLocation, function(point) {
+        geocoder.getLatLng(geocodeLocation, Ext.bind(function(point) {
             if (point) {
                 var lookAt = this.earth.createLookAt('');
                 lookAt.set(point.y, point.x, 10, this.earth.ALTITUDE_RELATIVE_TO_GROUND, 0, 60, 20000);
                 this.earth.getView().setAbstractView(lookAt);
             }
-        }.createDelegate(this));
+        }, this));
     },
 
     // Returns FormPanel for KML documents
@@ -229,7 +230,7 @@ Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
             selectOnFocus: true,
             scope: this,
             onTriggerClick: function(){
-                google.earth.fetchKml(this.scope.earth, this.getValue(), this.scope.addKml.createDelegate(this.scope));
+                google.earth.fetchKml(this.scope.earth, this.getValue(), Ext.bind(this.scope.addKml, this));
                 this.reset();
             },
             listeners: {specialkey: {fn: function(f, e){
@@ -250,7 +251,7 @@ Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
 
     // Load and display KML file
     fetchKml: function(kmlUrl){
-		google.earth.fetchKml(this.earth, kmlUrl, this.addKml.createDelegate(this));
+		google.earth.fetchKml(this.earth, kmlUrl, Ext.bind(this.addKml, this));
     },
 
     // Add KML object (called by above function)
@@ -298,5 +299,3 @@ Ext.ux.GEarthPanel = Ext.extend(Ext.Panel, {
     }
 
 });
-
-Ext.reg('gearthpanel', Ext.ux.GEarthPanel);
