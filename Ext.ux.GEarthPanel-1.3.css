@@ -4,9 +4,11 @@
  * bjorn@thematicmapping.org
  * http://thematicmapping.org
  *
+ * Updated for ExtJS 4.1 by Gerald Manipon
+ *
  * License: GNU General Public License v3
  *
- * Version: 1.1
+ * Version: 1.3
  *
  */
 
