@@ -1,0 +1,72 @@
+<html>
+<head>
+    <title>Control Panel Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-2.2/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="Ext.ux.GEarthPanel-1.1.css" />
+    <script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAvQLslBJZByOlS8Y3iPXgexSV5romlzgkIRRVpZz7TQ7Jsa0ZQxRh2GVXWb7jYX7ajChOO9olKH0Sgg"></script>
+    <script type="text/javascript" src="http://extjs.cachefly.net/builds/ext-cdn-611.js"></script>
+  	<script type="text/javascript" src="Ext.ux.GEarthPanel-1.1.js"></script>
+    <script type="text/javascript">
+
+        google.load("earth", "1");
+        google.load("maps", "2.xx");
+
+
+        Ext.onReady(function(){
+
+            // Create Google Earth panel
+            var earthPanel = new Ext.ux.GEarthPanel({
+                region: 'center',
+                contentEl: 'eastPanel',
+                margins: '5 5 5 0'
+            });
+
+            // Create control panel
+            var controlPanel = new Ext.Panel({
+                region: 'west',
+                contentEl: 'westPanel',
+                title: 'Control Panel',
+                width: 280,
+                border: true,
+                collapsible: true,
+                margins: '5 5 5 5',
+                layout: 'accordion',
+                layoutConfig: {
+                    animate: true
+                },
+                defaultType: 'panel',
+                defaults: {
+                    bodyStyle: 'padding: 10px'
+                }
+            });
+
+            // Add panels to browser viewport
+            var viewport = new Ext.Viewport({
+                layout: 'border',
+                items: [ controlPanel, earthPanel]
+            });
+
+            // Build control panel
+            earthPanel.on('earthLoaded', function(){
+
+                // Display KMLs
+                earthPanel.fetchKml('http://earthatlas.info/kml/statistics/infant_mortality_rate_2005_prism.kmz');
+
+                // Add panels
+                controlPanel.add(earthPanel.getKmlPanel());
+                controlPanel.add(earthPanel.getLocationPanel());
+                controlPanel.add(earthPanel.getLayersPanel());
+                controlPanel.add(earthPanel.getOptionsPanel());
+                controlPanel.doLayout();
+
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <div id="westPanel"></div>
+    <div id="eastPanel"></div>
+</body>
+</html>
