@@ -40,7 +40,8 @@ Ext.define('Ext.ux.GEarthPanel', {
                 setAtmosphereVisibility:   true,
                 setMouseNavigationEnabled: true
             },
-            kmlTreePanel: null
+            kmlTreePanel: null,
+            foldersPanel: null
         };
         Ext.applyIf(this, defConfig);
         Ext.ux.GEarthPanel.superclass.initComponent.call(this);
@@ -97,6 +98,22 @@ Ext.define('Ext.ux.GEarthPanel', {
         for (layer in layers){
             this.earth.getLayerRoot().enableLayerById(this.earth[layer], layers[layer]);
         }
+    },
+
+    // Returns FormPanel containing loaded folders
+    getFoldersPanel: function(){
+
+        // Create FormPanel with all layers
+        this.foldersPanel = new Ext.FormPanel({
+            title: 'Folders',
+            defaultType: 'checkbox',
+            defaults: {
+                hideLabel: true
+            },
+            items: []
+        });
+
+        return this.foldersPanel;
     },
 
     // Returns FormPanel containing Google Earth layers
